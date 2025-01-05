@@ -36,15 +36,15 @@ on:
         description: 'Skip release publishing'
         required: true
         type: boolean
-        default: false
+        default: true
       SKIP_SLACK_NOTIFICATIONS:
         description: 'Skip Slack notifications'
         required: true
         type: boolean
-        default: false
+        default: true
 
 env:
-  BUILD_BY: autobuild@vyos.net
+  BUILD_BY: vyos-autobuild@indrajit.com
   DEBIAN_MIRROR: http://deb.debian.org/debian/
   DEBIAN_SECURITY_MIRROR: http://deb.debian.org/debian-security
   VYOS_MIRROR: https://packages.vyos.net/repositories/current/
@@ -396,7 +396,7 @@ jobs:
       - name: Clone vyos-1x source code
         uses: actions/checkout@v4
         with:
-          repository: vyos/vyos-1x
+          repository: indrajitr/vyos-1x
           path: vyos-1x
       -  id: commit_ids
          shell: bash
@@ -455,7 +455,7 @@ jobs:
           json: |
             [
               {
-                "url": "https://github.com/vyos/vyos-nightly-build/releases/download/${{ needs.build_iso.outputs.build_version }}/${{ needs.build_iso.outputs.generic_image_iso }}",
+                "url": "https://github.com/indrajitr/vyos-nightly-build/releases/download/${{ needs.build_iso.outputs.build_version }}/${{ needs.build_iso.outputs.generic_image_iso }}",
                 "version": "${{ needs.build_iso.outputs.build_version }}",
                 "timestamp": "${{ needs.build_iso.outputs.TIMESTAMP }}"
               }
@@ -493,15 +493,3 @@ jobs:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           keep-count: 30
           keep-old-minor-releases: false
-
-  update_download_page:
-    needs:
-      - publish
-    uses: vyos/community.vyos.net/.github/workflows/main.yml@production
-    with:
-      branch: production
-      aws_amplify_region: ${{ vars.AWS_AMPLIFY_REGION }}
-      aws_amplify_app_id: ${{ vars.AWS_AMPLIFY_APP_ID }}
-    secrets:
-      AWS_AMPLIFY_ACCESS_KEY_ID: ${{ secrets.AWS_AMPLIFY_ACCESS_KEY_ID }}
-      AWS_AMPLIFY_SECRET_ACCESS_KEY: ${{ secrets.AWS_AMPLIFY_SECRET_ACCESS_KEY }}
